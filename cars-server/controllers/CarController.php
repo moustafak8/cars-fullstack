@@ -53,5 +53,19 @@ function newCar()
         echo ResponseService::response(500, ["error" => "Failed to add car"]);
     }
 }
-
- 
+function updatecar()
+{
+    global $connection;
+    $data = json_decode(file_get_contents("php://input"), true);
+    $id = $data['id'];
+    $newdata = ["name" => $data['name'], "color" => $data['color'], "year" => $data['year']];
+    $row = Car::update($connection, $id, $newdata);
+    if ($row) {
+        echo ResponseService::response(200, ["message" => "row Updated successfully"]);
+        return;
+    } else {
+        echo ResponseService::response(500, ["message" => "failed to update row"]);
+        return;
+    }
+}
+updatecar();

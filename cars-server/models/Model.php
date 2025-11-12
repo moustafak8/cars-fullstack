@@ -54,7 +54,8 @@ abstract class Model
             return false;
         }
     }
-    public function add(mysqli $connection , array $data){
+    public function add(mysqli $connection, array $data)
+    {
         $columns = array_keys($data);
         $placeholders = str_repeat('?,', count($columns) - 1) . '?';
         $sql = sprintf("INSERT INTO %s (%s) VALUES (%s)", static::$table, implode(',', $columns), $placeholders);
@@ -72,6 +73,34 @@ abstract class Model
         $query->bind_param($types, ...$allvalues);
         if ($query->execute()) {
             return $connection->insert_id;
+        } else {
+            return false;
+        }
+    }
+    public static function update(mysqli $connection, int $id, array $data)
+    {
+        if (empty($data)) {
+            return false;
+        }
+        $columns = array_keys($data);
+        $placeholders = implode('=?, ', $columns) . '=?';
+        $sql = sprintf("UPDATE %s SET %s WHERE %s = ?", static::$table, $placeholders, static::$primary_key);
+        $query = $connection->prepare($sql);
+        $types = '';
+        $values = [];
+        foreach ($data as $val) {
+            if (is_int($val)) {
+                $types .= 'i';
+            } else {
+                $types .= 's';
+            }
+            $values[] = $val;
+        }
+        $types .= 'i';// hay lal ID
+        $values[] = $id;
+        $query->bind_param($types, ...$values);
+        if ($query->execute()) {
+            return true;
         } else {
             return false;
         }
