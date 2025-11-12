@@ -22,8 +22,18 @@ function getCars()
         return;
     }
 }
+function deleteCar()
+{
+    global $connection;
 
+    if (isset($_GET["id"])) {
+        $id = $_GET["id"];
+        $car = Car::Deleterow($connection, $id);
+        echo ResponseService::response(200, ["message" => "row deleted successfully"]);
+        return;
+    } else {
+        echo ResponseService::response(500, ["message" => "failed to delete row"]);
+        return;
+    }
+}
 
-
-
-?>
