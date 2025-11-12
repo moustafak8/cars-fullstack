@@ -36,4 +36,22 @@ function deleteCar()
         return;
     }
 }
+function newCar()
+{
+    global $connection;
+    if ($_SERVER["REQUEST_METHOD"] != 'POST') {
+        echo ResponseService::response(405, "Method Not Allowed");
+        exit;
+    }
+    $data = json_decode(file_get_contents("php://input"), true);
+    $car = ["id" => $data['id'], "name" => $data['name'], "color" => $data['color'], "year" => $data['year']];
+    $new = new Car($car);
+    $insertedId = $new->add($connection, $car);
+    if ($insertedId) {
+        echo ResponseService::response(200, ["message" => "Car added successfully", "id" => $insertedId]);
+    } else {
+        echo ResponseService::response(500, ["error" => "Failed to add car"]);
+    }
+}
 
+ 
